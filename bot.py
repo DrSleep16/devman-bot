@@ -4,7 +4,8 @@ import requests
 from telegram import Bot
 
 
-def get_user_reviews_long_polling(api_token, chat_id):
+def get_user_reviews_long_polling(api_token, chat_id, tg_token):
+    bot = Bot(tg_token)
     headers = {"Authorization": f"Token {api_token}"}
     url = "https://dvmn.org/api/long_polling/"
     params = None
@@ -27,7 +28,7 @@ def get_user_reviews_long_polling(api_token, chat_id):
             print(new_attempts)
             params = {"timestamp": last_attempt_timestamp}
             if new_attempts[0]['is_negative']:
-                BOT.sendMessage(
+                bot.sendMessage(
                 chat_id=chat_id,
                 text=f"У вас проверили работу «{new_attempts[0]['lesson_title']}»"
                      f"\n\n"
@@ -36,7 +37,7 @@ def get_user_reviews_long_polling(api_token, chat_id):
                      f"Ссылка на работу: {new_attempts[0]['lesson_url']}"
                             )
             elif new_attempts[0]['is_negative'] is False:
-                BOT.sendMessage(
+                bot.sendMessage(
                 chat_id=chat_id,
                 text=f"У вас проверили работу «{new_attempts[0]['lesson_title']}»"
                      f"\n\n"
@@ -46,10 +47,9 @@ def get_user_reviews_long_polling(api_token, chat_id):
                             )
 
 if __name__ == '__main__':
-    TG_TOKEN = os.getenv('TG_TOKEN')
-    BOT = Bot(TG_TOKEN)
-    API_TOKEN= os.getenv('API_TOKEN')
-    TG_CHAT_ID = os.getenv('TG_CHAT_ID')
-    get_user_reviews_long_polling(API_TOKEN,TG_CHAT_ID)
+    tg_token = os.getenv('TG_TOKEN')
+    api_token= os.getenv('API_TOKEN')
+    tg_chat_id = os.getenv('TG_CHAT_ID')
+    get_user_reviews_long_polling(api_token, tg_chat_id, tg_token)
 
 
