@@ -48,8 +48,8 @@ def get_user_reviews_long_polling(api_token, chat_id):
 if __name__ == '__main__':
     TG_TOKEN = os.getenv('TG_TOKEN')
     BOT = Bot(TG_TOKEN)
-    YOUR_API_TOKEN= os.getenv('YOUR_API_TOKEN')
+    API_TOKEN= os.getenv('API_TOKEN')
     TG_CHAT_ID = os.getenv('TG_CHAT_ID')
-    get_user_reviews_long_polling(YOUR_API_TOKEN,TG_CHAT_ID)
+    get_user_reviews_long_polling(API_TOKEN,TG_CHAT_ID)
 
 
