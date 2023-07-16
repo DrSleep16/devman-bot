@@ -26,24 +26,22 @@ def get_user_reviews_long_polling(api_token, chat_id, tg_token):
             new_attempts = response_data["new_attempts"]
             last_attempt_timestamp = response_data["last_attempt_timestamp"]
             params = {"timestamp": last_attempt_timestamp}
-            if new_attempts[0]['is_negative']:
-                bot.sendMessage(
-                chat_id=chat_id,
-                text=f"У вас проверили работу «{new_attempts[0]['lesson_title']}»"
-                     f"\n\n"
-                     f"К сожалению, в работе нашлись ошибки."
-                     f"\n\n"
-                     f"Ссылка на работу: {new_attempts[0]['lesson_url']}"
-                            )
-            elif new_attempts[0]['is_negative'] is False:
-                bot.sendMessage(
-                chat_id=chat_id,
-                text=f"У вас проверили работу «{new_attempts[0]['lesson_title']}»"
-                     f"\n\n"
-                     f"преподавателю всё понравилось! Можно приступить к следующему уроку!"
-                     f"\n\n"
-                     f"Ссылка на работу: {new_attempts[0]['lesson_url']}"
-                            )
+            lesson_title = new_attempts[0]['lesson_title']
+            lesson_url = new_attempts[0]['lesson_url']
+            is_negative = new_attempts[0]['is_negative']
+            if is_negative:
+                message = f'''
+                У вас проверили работу «{lesson_title}»
+                К сожалению, в работе нашлись ошибки.
+                Ссылка на работу: {lesson_url}
+                '''
+            else:
+                message = f'''
+                У вас проверили работу «{lesson_title}»
+                Преподавателю всё понравилось! Можно приступить к следующему уроку!
+                Ссылка на работу: {lesson_url}
+                '''
+            bot.sendMessage(chat_id,text=message)
 
 if __name__ == '__main__':
     tg_token = os.getenv('TG_TOKEN')
