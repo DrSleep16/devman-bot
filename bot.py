@@ -25,7 +25,6 @@ def get_user_reviews_long_polling(api_token, chat_id, tg_token):
         if response_data["status"] == "found":
             new_attempts = response_data["new_attempts"]
             last_attempt_timestamp = response_data["last_attempt_timestamp"]
-            print(new_attempts)
             params = {"timestamp": last_attempt_timestamp}
             if new_attempts[0]['is_negative']:
                 bot.sendMessage(
