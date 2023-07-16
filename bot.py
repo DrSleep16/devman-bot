@@ -14,6 +14,9 @@ def get_user_reviews_long_polling(api_token, chat_id, tg_token):
             response = requests.get(url, headers=headers,
                                     params=params)
             response.raise_for_status()
+        except requests.exceptions.ReadTimeout as e:
+            print(f'ReadTimeout: {e}')
+            continue
         except requests.exceptions.ConnectionError as e:
             print(f"Нет соединения: {e}")
             time.sleep(5)
@@ -41,7 +44,7 @@ def get_user_reviews_long_polling(api_token, chat_id, tg_token):
                 Преподавателю всё понравилось! Можно приступить к следующему уроку!
                 Ссылка на работу: {lesson_url}
                 '''
-            bot.sendMessage(chat_id,text=message)
+            bot.send_message(chat_id,text=message)
 
 if __name__ == '__main__':
     tg_token = os.getenv('TG_TOKEN')
