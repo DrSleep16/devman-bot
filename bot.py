@@ -14,8 +14,7 @@ def get_user_reviews_long_polling(api_token, chat_id, tg_token):
             response = requests.get(url, headers=headers,
                                     params=params)
             response.raise_for_status()
-        except requests.exceptions.ReadTimeout as e:
-            print(f'ReadTimeout: {e}')
+        except requests.exceptions.ReadTimeout:
             continue
         except requests.exceptions.ConnectionError as e:
             print(f"Нет соединения: {e}")
@@ -24,10 +23,10 @@ def get_user_reviews_long_polling(api_token, chat_id, tg_token):
         except requests.exceptions.RequestException as e:
             print(f"Ошибка запроса: {e}")
             continue
-        response_data = response.json()
-        if response_data["status"] == "found":
-            new_attempts = response_data["new_attempts"]
-            last_attempt_timestamp = response_data["last_attempt_timestamp"]
+        review_result = response.json()
+        if review_result["status"] == "found":
+            new_attempts = review_result["new_attempts"]
+            last_attempt_timestamp = review_result["last_attempt_timestamp"]
             params = {"timestamp": last_attempt_timestamp}
             lesson_title = new_attempts[0]['lesson_title']
             lesson_url = new_attempts[0]['lesson_url']
