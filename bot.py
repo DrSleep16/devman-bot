@@ -1,11 +1,26 @@
 import os
 import time
 import requests
+import logging
 from telegram import Bot
+from dotenv import load_dotenv
+load_dotenv()
 
 
-def get_user_reviews_long_polling(api_token, chat_id, tg_token):
-    bot = Bot(tg_token)
+logging.basicConfig(level=logging.ERROR)
+
+class TelegramLogHandler(logging.Handler):
+    def __init__(self, bot, chat_id):
+        super().__init__()
+        self.bot = bot
+        self.chat_id = chat_id
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.bot.send_message(chat_id=self.chat_id, text=log_entry)
+
+
+def get_user_reviews_long_polling(api_token, chat_id, bot):
     headers = {"Authorization": f"Token {api_token}"}
     url = "https://dvmn.org/api/long_polling/"
     params = None
@@ -49,6 +64,8 @@ if __name__ == '__main__':
     tg_token = os.getenv('TG_TOKEN')
     api_token= os.getenv('API_TOKEN')
     tg_chat_id = os.getenv('TG_CHAT_ID')
-    get_user_reviews_long_polling(api_token, tg_chat_id, tg_token)
-
-
+    bot = Bot(tg_token)
+    log_handler = TelegramLogHandler(bot, tg_chat_id)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(log_handler)
+    get_user_reviews_long_polling(api_token, tg_chat_id, bot)
