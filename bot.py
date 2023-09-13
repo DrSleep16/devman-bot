@@ -6,7 +6,8 @@ from telegram import Bot
 from dotenv import load_dotenv
 
 
-logging.basicConfig(level=logging.ERROR)
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.ERROR)
 
 class TelegramLogHandler(logging.Handler):
     def __init__(self, bot, chat_id):
@@ -66,6 +67,5 @@ if __name__ == '__main__':
     tg_chat_id = os.getenv('TG_CHAT_ID')
     bot = Bot(tg_token)
     log_handler = TelegramLogHandler(bot, tg_chat_id)
-    root_logger = logging.getLogger()
     root_logger.addHandler(log_handler)
     get_user_reviews_long_polling(api_token, tg_chat_id, bot)
