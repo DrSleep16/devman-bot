@@ -4,7 +4,6 @@ import requests
 import logging
 from telegram import Bot
 from dotenv import load_dotenv
-load_dotenv()
 
 
 logging.basicConfig(level=logging.ERROR)
@@ -61,6 +60,7 @@ def get_user_reviews_long_polling(api_token, chat_id, bot):
             bot.send_message(chat_id,text=message)
 
 if __name__ == '__main__':
+    load_dotenv()
     tg_token = os.getenv('TG_TOKEN')
     api_token= os.getenv('API_TOKEN')
     tg_chat_id = os.getenv('TG_CHAT_ID')
