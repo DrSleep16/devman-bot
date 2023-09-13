@@ -32,11 +32,9 @@ def main(api_token, chat_id, bot):
         except requests.exceptions.ReadTimeout:
             continue
         except requests.exceptions.ConnectionError as e:
-            print(f"Нет соединения: {e}")
             time.sleep(5)
             continue
         except requests.exceptions.RequestException as e:
-            print(f"Ошибка запроса: {e}")
             continue
         review_result = response.json()
         if review_result["status"] == "found":
