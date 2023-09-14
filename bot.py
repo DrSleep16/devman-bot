@@ -20,38 +20,6 @@ class TelegramLogHandler(logging.Handler):
         self.bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
-def initialize_bot_and_logger():
-    load_dotenv()
-    root_logger.setLevel(logging.ERROR)
-    tg_token = os.getenv('TG_TOKEN')
-    api_token = os.getenv('API_TOKEN')
-    tg_chat_id = os.getenv('TG_CHAT_ID')
-    bot = Bot(tg_token)
-    log_handler = TelegramLogHandler(bot, tg_chat_id)
-    root_logger.addHandler(log_handler)
-    return bot, tg_chat_id, api_token
-
-
-def run_main_bot_loop(api_token, chat_id, bot):
-    headers = {"Authorization": f"Token {api_token}"}
-    url = "https://dvmn.org/api/long_polling/"
-    params = None
-    while True:
-        try:
-            response = requests.get(url, headers=headers, params=params)
-            response.raise_for_status()
-        except requests.exceptions.ReadTimeout:
-            continue
-        except requests.exceptions.ConnectionError as e:
-            time.sleep(5)
-            continue
-        except requests.exceptions.RequestException as e:
-            continue
-        review_result = response.json()
-        if review_result["status"] == "found":
-            process_review_result(review_result, bot, chat_id)
-
-
 def process_review_result(review_result, bot, chat_id):
     new_attempts = review_result["new_attempts"]
     last_attempt_timestamp = review_result["last_attempt_timestamp"]
@@ -74,6 +42,39 @@ def process_review_result(review_result, bot, chat_id):
     bot.send_message(chat_id, text=message)
 
 
+def main():
+    load_dotenv()
+    
+    tg_token = os.getenv('TG_TOKEN')
+    bot = Bot(tg_token)
+    
+    root_logger.setLevel(logging.ERROR)
+    
+    api_token = os.getenv('API_TOKEN')
+    tg_chat_id = os.getenv('TG_CHAT_ID')
+    
+    log_handler = TelegramLogHandler(bot, tg_chat_id)
+    root_logger.addHandler(log_handler)
+
+    headers = {"Authorization": f"Token {api_token}"}
+    url = "https://dvmn.org/api/long_polling/"
+    params = None
+    
+    while True:
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+        except requests.exceptions.ReadTimeout:
+            continue
+        except requests.exceptions.ConnectionError as e:
+            time.sleep(5)
+            continue
+        except requests.exceptions.RequestException as e:
+            continue
+        review_result = response.json()
+        if review_result["status"] == "found":
+            process_review_result(review_result, bot, tg_chat_id)
+
+
 if __name__ == '__main__':
-    bot, tg_chat_id, api_token = initialize_bot_and_logger()
-    run_main_bot_loop(api_token, tg_chat_id, bot)
+    main()
