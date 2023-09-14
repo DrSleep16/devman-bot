@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 
 root_logger = logging.getLogger()
-root_logger.setLevel(logging.ERROR)
+
 
 class TelegramLogHandler(logging.Handler):
     def __init__(self, bot, chat_id):
@@ -60,6 +60,7 @@ def main(api_token, chat_id, bot):
 
 if __name__ == '__main__':
     load_dotenv()
+    root_logger.setLevel(logging.ERROR)
     tg_token = os.getenv('TG_TOKEN')
     api_token= os.getenv('API_TOKEN')
     tg_chat_id = os.getenv('TG_CHAT_ID')
